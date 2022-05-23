@@ -11,8 +11,7 @@ services:
     environment:
       AWS_REGION: eu-west-3
       AWS_DEFAULT_REGION: eu-west-3
-      AWS_ACCESS_KEY_ID: admin
-      AWS_SECRET_ACCESS_KEY: adminadmin
+      AWS_ACCEну а по логике еEY: adminadmin
       MLFLOW_S3_ENDPOINT_URL: http://minio:9000
     ports:
       - "5000:5000"
@@ -29,7 +28,7 @@ services:
 
   ml_project:
     build: ml_project/
-    command: "./start.sh"
+    command: "./project/start.sh"
     ports:
       - '1234:1234'
     depends_on:
@@ -67,3 +66,22 @@ services:
       /usr/bin/mc mb myminio/test-bucket;
       exit 0;
       "
+
+  data_handler:
+    build: data_handler/
+    command: "python main.py"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    restart: always
+
+  dashboard:
+    build: dashboard/
+    command: "python vis.py"
+    ports:
+      - "8050:8050"
+    depends_on:
+      - ml_project
+    links:
+      - minio
